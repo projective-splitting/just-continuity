@@ -166,12 +166,11 @@ plt.rc('xtick',labelsize=ourTick)
 plt.rc('ytick',labelsize=ourTick)
 ax = plt.gca()
 ourFont = 20
-logPlots = True
 ourMark = 500
 ourMarkSize = 15
 ax.tick_params(width=3,length=10)
 
-plotXvals = False
+plotXvals = True
 if(plotXvals):
     print("plotting the true and recovered signals")
     plt.plot(xtest) # true signal
@@ -183,7 +182,7 @@ if(plotXvals):
 # estimate the optimal value as the minimum returned by all methods
 opt = min(fx2_ps + Fx_sg+F_x_tg_prod+Fx_proxSG)
 
-rawPlots = False
+rawPlots = True
 if(rawPlots):
     print("plotting the function values vs number of multiplies")
     plt_range = 100 #print only plot the first plt_range iterations
@@ -200,6 +199,7 @@ if(rawPlots):
     plt.show()
 
 
+logPlots = True
 if(logPlots):
     print("plotting relative error of function values on a semi-log plot vs number of matrix multiplies")
     plt.semilogy( mults_ps,(fx2_ps-opt)/opt)
