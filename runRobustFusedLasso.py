@@ -30,7 +30,6 @@ if Exp==1:
     p = 1.3
     lam1 = 1.0
     lam2 = 1.0
-
 elif Exp==2:
     #Experiment 2
     p = 1.5
