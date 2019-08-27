@@ -81,7 +81,7 @@ def ps(d,iter,rho1,rho2,rho3,theProx,theGrad,theFunc,gamma,lam1,lam2,Delta):
             w1 = w1 - (phi / normGradsq) * gradw1
             w2 = w2 - (phi / normGradsq) * gradw2
         else:
-            print "gradient of hyperplane is 0"
+            print("gradient of hyperplane is 0")
             notDone = False
 
 
