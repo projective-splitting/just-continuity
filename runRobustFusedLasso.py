@@ -18,30 +18,42 @@ import numpy as np
 import robustFusedLasso as fl
 import time
 from matplotlib import pyplot as plt
+import sys
+import argparse
 
-d = 2000  #dimension of the problem
-n = 1000 # number of measurements, i.e. rows of A
+parser = argparse.ArgumentParser(description='Robust fused LASSO Experiment')
+parser.add_argument('--dimension', type=int, default=2000, dest='dimension',
+                    help='problem dimension/number of attributes',metavar='D')
+parser.add_argument('--observations', type=int, default=1000, dest='observations',
+                    help='number of observations/measurements',metavar='N')
+parser.add_argument('--power', type=float, default=1.3, dest='power',
+                    help='exponent in loss function, must be > 1',metavar='P')
+parser.add_argument('--cutoff', type=int, default=4000, dest='cutoff',
+                    help='truncate chart horizontal axis after C ' +
+                         'matrix multiplications',metavar='C')
+parser.add_argument('--lambda1', type=float, default=1.0, dest='lambda1',
+                    help='fusion penalty',metavar='L1')
+parser.add_argument('--lambda2', type=float, default=1.0, dest='lambda2',
+                    help='LASSO penalty',metavar='L2')
+parser.add_argument('--nolegend', default=True, dest='legend',
+                    action='store_false',help='omit chart legend')
 
-Exp = 1 # select which experiment Exp=1,2, or 3.
+args = parser.parse_args()
 
+d = args.dimension     #dimension of the problem
+n = args.observations  # number of measurements, i.e. rows of A
+p = args.power
+lam1 = args.lambda1
+lam2 = args.lambda2
 
-if Exp==1:
-    #Experiment 1
-    p = 1.3
-    lam1 = 1.0
-    lam2 = 1.0
-elif Exp==2:
-    #Experiment 2
-    p = 1.5
-    lam1 = 1.0
-    lam2 = 1.0
-else:
-    p = 1.7
-    lam1 = 1.0
-    lam2 = 1.0
+cutoff = args.cutoff
 
+if p <= 1:
+    print("Loss function exponent " + str(p) + ' is too small')
+    print("It should be greater than 1")
+    sys.exit(1)
 
-print("Experiment "+str(Exp) + ": p = "+str(p))
+print(str(n) + ' x ' + str(d) + ' problem, exponent=' + str(p))
 
 print("generating the random data...")
 A = np.random.normal(0,1,[n,d])
@@ -197,16 +209,21 @@ if(rawPlots):
     plt.title('function values')
     plt.show()
 
-
 logPlots = True
 if(logPlots):
     print("plotting relative error of function values on a semi-log plot vs number of matrix multiplies")
-    plt.semilogy( mults_ps,(fx2_ps-opt)/opt)
-    plt.semilogy(mults_tg_prod, (F_x_tg_prod - opt) / opt,'s-',markevery = int(0.5*ourMark),markersize=ourMarkSize)
-    plt.semilogy( range(0,2*iterSG+2,2),(Fx_sg - opt)/opt,'o-',markevery = ourMark,markersize=ourMarkSize) #number of multiplies per iteration is 2 for subg and prox subg
-    plt.semilogy( range(0,2*iterSG+2,2),(Fx_proxSG - opt)/opt,'v-',markevery = ourMark,markersize=ourMarkSize)
+    plt.semilogy(mults_ps,(fx2_ps-opt)/opt)
+    plt.semilogy(mults_tg_prod, (F_x_tg_prod - opt) / opt,
+    	         's-',markevery = int(0.5*ourMark),markersize=ourMarkSize)
+    plt.semilogy(range(0,2*iterSG+2,2),(Fx_sg - opt)/opt,
+                 'o-',markevery = ourMark,markersize=ourMarkSize) #number of multiplies per iteration is 2 for subg and prox subg
+    plt.semilogy(range(0,2*iterSG+2,2),(Fx_proxSG - opt)/opt,
+    	         'v-',markevery = ourMark,markersize=ourMarkSize)
 
-    if Exp==1:
+    ax = plt.gca()
+    ax.set_xlim(left=0,right=cutoff)
+
+    if args.legend:
         plt.legend(['ps','tseng-pd','sg','prox-sg'],fontsize=ourFont,loc='lower left')
 
     plt.xlabel('matrix multiplications',fontsize=ourFont)
